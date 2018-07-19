@@ -1,0 +1,6 @@
+# Ignora tutti i file con estensione .log
+*.log
+
+# Ignora altri file di sistema di GIT
+.DS_Store
+.Rhistory
