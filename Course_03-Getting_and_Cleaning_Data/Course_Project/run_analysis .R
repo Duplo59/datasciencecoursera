@@ -3,7 +3,7 @@
 # run_analysis.R
 #
 # ------------------------------------------------------------------------------
-# Step 1 - Set variables and lad packages
+# Step 1 - Set variables and load packages
 # ------------------------------------------------------------------------------
 library(plyr)
 library(dplyr)
@@ -41,43 +41,43 @@ if (file.exists(zipDataFile))
 		{file.remove(zipDataFile)
 		unlink(workingDirectory, recursive = TRUE)}
 # Download file with the specified name and unzip it
-download.file(fileUrl,file.path(currentPath, "ZipDataFile.zip"),method="curl")
+download.file(fileUrl,file.path(currentPath, "ZipDataFile.zip"), method="curl")
 unzip(zipfile = "ZipDataFile.zip")
 
 # ------------------------------------------------------------------------------
-# Step 3 - Read file to be analyzed 
+# Step 3 - Read files to be analyzed 
 # ------------------------------------------------------------------------------
 # Read activity_labels with column naming
 activityLabels <- read.table(file.path(currentPath, workingDirectory, 
-			activityFile), col.names =  activityCols)
+		activityFile), col.names =  activityCols)
 
 # Read features
 features <- read.table(file.path(currentPath, workingDirectory, featureFile),
-			col.names =  featureCols, as.is = TRUE)
+		col.names =  featureCols, as.is = TRUE)
 
 # Read subject - test. Column naming
 subjectTest <- read.table(file.path(currentPath, workingDirectory, testDir, 
-			subjectTestFile), col.names =  subjectCols)
+		subjectTestFile), col.names =  subjectCols)
 
 # Read activity - test. Column naming
 activityTest <- read.table(file.path(currentPath, workingDirectory, testDir, 
-			activityTestFile), col.names =  activityCols[1])
+		activityTestFile), col.names =  activityCols[1])
 
 # Read measures - test
 measureTest <- read.table(file.path(currentPath, workingDirectory, testDir, 
-			measureTestFile))
+		measureTestFile))
 
 # Read subject - train. Column naming
 subjectTrain <- read.table(file.path(currentPath, workingDirectory, trainDir, 
-			subjectTrainFile), col.names =  subjectCols)
+		subjectTrainFile), col.names =  subjectCols)
 
 # Read activity - train. Column naming
 activityTrain <- read.table(file.path(currentPath, workingDirectory, trainDir, 
-			activityTrainFile), col.names =  activityCols[1])
+		activityTrainFile), col.names =  activityCols[1])
 
 # Read measures - train
 measureTrain <- read.table(file.path(currentPath, workingDirectory, trainDir, 
-			measureTrainFile))
+		measureTrainFile))
 
 # ------------------------------------------------------------------------------
 # Step 4 - Merge test and training data (by row)
@@ -100,7 +100,7 @@ requiredFeatures <- grep("-(mean|std)\\(\\)", features[, 2])
 measure <- measure[, requiredFeatures]
 # Set descriptive column names
 names(measure) <- features[requiredFeatures, 2]
-# Create one data set
+# Create a unique data set
 activityRequired <- cbind(subject, activity, measure)
 # Delete temp dataframes
 rm(subjectTest, activityTest, measureTest, subjectTrain, activityTrain, measureTrain)
