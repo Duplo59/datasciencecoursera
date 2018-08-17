@@ -32,6 +32,7 @@ Below, the steps in detail:
 6. Step 6 - Use activity description instead of activity ID
 7. Step 7 - Label data set with descriptive variables names
 8. Step 8 - Create tidy data set with the average of each variable for each activity and each subject
+NB: see comments in the code for further information
 
 It is possibile to run the script:
 - identify your working directory and store the script in it
