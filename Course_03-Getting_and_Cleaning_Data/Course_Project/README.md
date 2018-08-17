@@ -20,7 +20,7 @@ about mean and standard deviation, grouped by two identifiers: subjectID, activi
 ## The R script - 'run_analysis.R'
 The script performs the following main tasks:
 - **retrieve** and **unzip** the input data set;
-- **transforms** and **clean** the data;
+- **transform** and **clean** the data;
 - **create** the final tidy data set.
 
 Below, the steps in detail:
