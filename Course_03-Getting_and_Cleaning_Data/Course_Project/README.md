@@ -11,10 +11,10 @@ The goal of the experiment was to analyze data on the physical activity carried 
 
 ## Available files
 The available files are as follows:
-- Codebook.md: it describes the variables of the final data set ("tidyDataSet.txt") and the steps performed by the R program ("run_analysis.R");
-- Readme.md: it describes the goal of the project and the experiment;
-- run_analysis.R: it shows the steps performed to get, transform and clean the data and to create the final tidy data set;
-- tidyDataSet.txt: it contains the final tidy data set ready for analysis.
+- **Codebook.md**: it describes the variables of the final data set ("tidyDataSet.txt") and the steps performed by the R program ("run_analysis.R");
+- **Readme.md**: it describes the goal of the project and the experiment;
+- **run_analysis.R**: it shows the steps performed to get, transform and clean the data and to create the final tidy data set;
+- **tidyDataSet.txt**: it contains the final tidy data set ready for analysis.
 
 ## The R script - 'run_analysis.R'
 The script performs the following main tasks:
