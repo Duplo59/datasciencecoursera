@@ -28,6 +28,7 @@ required, they were picked up by a wider file containing 561 variables (see scri
 The characteristics of the variables are as follows:
 - values normalized and bounded within [-1, 1];
 - two main types of measurements: time (prefix 'time') and frequency (prefix 'frequency');
+
 Below, a brief desciption of the variables (starting from the third column):
 - time body accelerometer measure - mean values - X, Y and Z axes --> three variables (cols 3 - 5);
 - time body accelerometer measure - standard deviation values - X, Y and Z axes --> three variables (cols 6 - 8);
