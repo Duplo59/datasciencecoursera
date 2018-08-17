@@ -10,12 +10,12 @@ the row (they are the 'primary key' of the file). In detail:
 - **subjectID**: it identifies the volunteer number (range: 1 - 30; integer);
 - **activityDescription**: it identifies the specific activity performed by the human. The domain 
 values (string) are as follows:
--- LAYING;
--- SITTING
--- STANDING
--- WALKING
--- WALKING_DOWNSTAIRS
--- WALKING_UPSTAIRS
+    - LAYING;
+    - SITTING
+    - STANDING
+    - WALKING
+    - WALKING_DOWNSTAIRS
+    - WALKING_UPSTAIRS
 The remaining 66 variables are mean values computed on detail values by subjectID, 
 activityDescription. As there are 30 volunteers (subjectIDs) and 
 6 activities (activityDescription), the total number of rows is 180.
