@@ -18,10 +18,23 @@ The available files are as follows:
 
 ## The R script - 'run_analysis.R'
 The script performs the following main tasks:
-- retrieve and unzip the input data set;
-- transforms and clean the data;
-- create the final tidy data set.
+- **retrieve** and **unzip** the input data set;
+- **transforms** and **clean** the data;
+- **create** the final tidy data set.
 
 Below, the steps in detail:
+1. Step 1 - Set variables and load packages
+2. Step 2 - Set variables and load packages
+3. Step 3 - Read files to be analyzed
+4. Step 4 - Merge test and training data (by row)
+5. Step 5 - Consider only the required columns - Create unique data set - Delete temp dataframes
+6. Step 6 - Use activity description instead of activity ID
+7. Step 7 - Label data set with descriptive variables names
+8. Step 8 - Create tidy data set with the average of each variable for each activity and each subject
+
+It is possibile to run the script:
+- identify your working directory and store the script in it
+- run the script
+
 
 
