@@ -89,7 +89,7 @@ measure <- rbind(measureTest, measureTrain)
 
 # ------------------------------------------------------------------------------
 # Step 5 - Consider only the required columns
-#		   Create one data set
+#		   Create unique data set
 # 		   Delete temp dataframes
 # ------------------------------------------------------------------------------
 # Find the integer vector that identifies the required columns
