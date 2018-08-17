@@ -16,6 +16,7 @@ values (string) are as follows:
     - WALKING
     - WALKING_DOWNSTAIRS
     - WALKING_UPSTAIRS
+
 The remaining 66 variables are mean values computed on detail values by subjectID, 
 activityDescription. As there are 30 volunteers (subjectIDs) and 
 6 activities (activityDescription), the total number of rows is 180.
