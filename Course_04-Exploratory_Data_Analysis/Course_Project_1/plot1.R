@@ -34,5 +34,6 @@ hpc_data <- mutate(hpc_data, Global_active_power = as.numeric(Global_active_powe
 # Initialize png plot with requirde width and height
 png("plot1.png", width=480, height=480)
 # Plot the graph
-hist(hpc_data$Global_active_power, col="red", main="Global Active Power", xlab="Global Active Power (kilowatts)")
+with (hpc_data, hist(Global_active_power, col="red", main="Global Active Power", 
+xlab="Global Active Power (kilowatts)"))
 dev.off()
