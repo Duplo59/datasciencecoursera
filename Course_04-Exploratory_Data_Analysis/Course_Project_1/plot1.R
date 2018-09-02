@@ -15,17 +15,17 @@ inputFile <- "household_power_consumption.txt"
 # ------------------------------------------------------------------------------
 # Read file with specification of NA field and with no factor variable. Then
 # change two fields format (otherwise they are in character format). Subset
-# dataset
+# dataset to consider only records belonging to a specific date interval
 # ------------------------------------------------------------------------------
 # Read txt file 
 hpc_data <- read.table(file.path(currentPath, inputFile), header = TRUE, 
 sep = ";", na.strings="?", stringsAsFactors=FALSE)
-# Change Date from character format to Time format
+# Change Date from Character format to Date format
 hpc_data <- mutate(hpc_data, Date = as.Date(Date, "%d/%m/%Y"))
 # Filter only the required information by Date range. NB: the standard date format
 # is yyyy-mm-dd
 hpc_data <- filter(hpc_data, (Date >= "2007-02-01") & (Date <= "2007-02-02"))
-# Change format Global_active_power da character a numeric
+# Change Global_active_power format from Character to Numeric
 hpc_data <- mutate(hpc_data, Global_active_power = as.numeric(Global_active_power))
 
 # ------------------------------------------------------------------------------
