@@ -1,0 +1,268 @@
+---
+title: Impact analysis on US public health and economy caused by storms and
+  other severe weather events
+author: "Paolo Guderzo"
+date: "20 gennaio 2019"
+output: html_document
+---
+
+## 1. Synopsis
+In this report we aim to analyze the impact on US public health and economy caused by storms and other severe weather events. 
+
+We will use data coming from the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database.
+The database covers the time period between 1950 and November 2011. In the earlier years of the database there are generally fewer events recorded, most likely due to a lack of good records. More recent years should be considered more complete.
+
+The report will try to address two questions:
+
+* which type of events are most harmful with respect to population health;
+* which type of events have the greatest economic consequences - property and agriculture (i.e. crops).
+
+## 2. Data processing
+The data can be downloaded from the Course Website: [Storm Data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2).
+Documentation about the database can be found at the following links:
+
+* National Weather Service: [Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf)
+* National Climatic Data Center Storm Events: [FAQ](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2FNCDC%20Storm%20Events-FAQ%20Page.pdf)
+
+### 2.1 Unzip, load and prepare data
+
+#### 2.1.1 Setting Global Options
+
+```{r setoptions, echo = TRUE}
+knitr::opts_chunk$set(echo = TRUE, results = "asis", warning = FALSE, message = TRUE)
+```
+
+#### 2.1.2 Loading R packages
+```{r, echo=TRUE, results='TRUE', warning=FALSE, message=FALSE}
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(R.utils)
+library(gridExtra)
+```
+#### 2.1.3 Unzip the file
+
+```{r unzipFile}
+workingDirectory <- getwd()
+zipDataFile <- "repdata_data_StormData.csv.bz2"
+dataFile <- "repdata_data_StormData.csv"
+if(!file.exists(dataFile)){
+    bunzip2(zipDataFile, dataFile, remove = FALSE)
+}
+```
+
+#### 2.1.4 Read and load the data
+```{r readLoadData}
+fullData <- read.table(file.path(workingDirectory,
+	        dataFile), 
+	        header = TRUE,
+	        sep = ",",
+	        stringsAsFactors=FALSE)
+```
+
+#### 2.1.5 Subset data in order to manage only the necessary information about health and economic aspects involved by storms and other severe weather events
+``` {r subsetData}
+fullDataRed <- fullData[,c("EVTYPE", "FATALITIES", "INJURIES", "PROPDMG","PROPDMGEXP","CROPDMG","CROPDMGEXP")]
+```
+#### 2.1.6 Apply toupper function to all columns containing character values (EVTYPE, PROPDMGRXP, CROPDMGEXP) in order to have all of them in capital letters
+``` {r toUpperColumns}
+fullDataRed$EVTYPE <- toupper(fullDataRed$EVTYPE)
+fullDataRed$PROPDMGEXP <- toupper(fullDataRed$PROPDMGEXP)
+fullDataRed$CROPDMGEXP <- toupper(fullDataRed$CROPDMGEXP)
+```
+### 2.2 Public health problems - prepare data for plotting
+
+#### 2.2.1 Sum fatalities and injuries by event type; then order data in descending order for plotting
+```{r prepPublicHealthData}
+publicHealthData <- ddply(fullDataRed, .(EVTYPE), summarize, groupByFatalities = sum(FATALITIES),groupByInjuries = sum(INJURIES))
+
+groupByFatalitiesDesc <- arrange(publicHealthData, desc(groupByFatalities))
+# Delete unuseful column (groupByInjuries)
+groupByFatalitiesDesc <- subset(groupByFatalitiesDesc, select = -groupByInjuries)
+
+groupByInjuriesDesc <- arrange(publicHealthData, desc(groupByInjuries))
+# Delete unuseful column (groupByFatalities)
+groupByInjuriesDesc <- subset(groupByInjuriesDesc, select = -groupByFatalities)
+```
+
+### 2.3 Economic problems - prepare data for plotting
+
+#### 2.3.1 Compute the economic values using a function that correctly interprets the exponential codes stored in the PROPDMGEXP and CROPDMGEXP columns
+
+1) Define a function to use for the correction of the exponential codes
+
+```{r defCorrectingFunction}
+correctExp <- function(expValue)
+{
+	correctExpValue <- 0
+	if (expValue == "H")
+		{
+		correctExpValue <- 2
+		return(correctExpValue)
+		}
+	else if (expValue == "K")
+		{
+		correctExpValue <- 3
+		return(correctExpValue)
+		}
+	else if (expValue == "M")
+		{
+		correctExpValue <- 6
+		return(correctExpValue)
+		}
+	else if (expValue == "B")
+		{
+		correctExpValue <- 9
+		return(correctExpValue)
+		}
+	else if (expValue %in% c("", "-", "?", "+"))
+		{
+		correctExpValue <- 0
+		return(correctExpValue)
+		}
+	else if (!is.na(as.numeric(expValue)))
+		{
+		correctExpValue <- as.numeric(expValue)
+		return(correctExpValue)
+		}	
+	else 
+		{
+		stop("Input value not managed")
+		}
+}
+```
+
+2) Apply this function to update both PROPDMGEXP and CROPDMGEXP variables
+
+```{r applyCorrection}
+fullDataRed$PROPDMGEXP <- sapply(fullDataRed$PROPDMGEXP, correctExp)
+fullDataRed$CROPDMGEXP <- sapply(fullDataRed$CROPDMGEXP, correctExp)
+```
+
+3) Compute the economic damage amount for both PROPDMG and CROPDMG variables, adding two new variables
+
+```{r computeDamageAmount}
+fullDataRed$PropDmgAmt <- fullDataRed$PROPDMG * (10 ** fullDataRed$PROPDMGEXP)
+fullDataRed$CropDmgAmt <- fullDataRed$CROPDMG * (10 ** fullDataRed$CROPDMGEXP)
+```
+
+#### 2.3.2 Sum properties and crops damages by event type; then order data in descending order for plotting
+
+```{r sumEconomicData}
+economicData <- ddply(fullDataRed, .(EVTYPE), summarize, groupByProperties = sum(PropDmgAmt), groupByCrops = sum(CropDmgAmt))
+
+groupByPropertiesDesc <- arrange(economicData, desc(groupByProperties))
+# Delete unuseful column (groupByProperties)
+groupByPropertiesDesc <- subset(groupByPropertiesDesc, select = -groupByCrops)
+
+groupByCropsDesc <- arrange(economicData, desc(groupByCrops))
+# Delete unuseful column (groupByCrops)
+groupByCropsDesc <- subset(groupByCropsDesc, select = -groupByProperties)
+```
+
+## 3. Results
+
+### 3.1 Ten top events with the most dangerous effects on population health
+
+```{r healthPopulationChart}
+# Create fatalities chart - Select top ten events
+fatalitiesChart <- ggplot(data=head(groupByFatalitiesDesc,10), aes(x=reorder(EVTYPE, -groupByFatalities), y=groupByFatalities))
+
+# Define the type of the chart - Use stat = "identity" that leaves the data as is
+fatalitiesChart = fatalitiesChart + geom_bar(stat="identity", fill = "skyblue4")
+
+# Set y-axis label
+fatalitiesChart = fatalitiesChart + ylab("Number of fatalities")
+
+# Set x-axis label
+fatalitiesChart = fatalitiesChart + xlab("Event type")
+fatalitiesChart = fatalitiesChart + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Set chart title
+fatalitiesChart = fatalitiesChart + ggtitle("Number of fatalities by event type") + theme(plot.title = element_text(hjust = 0.5))
+fatalitiesChart = fatalitiesChart + theme(legend.position="none")
+
+
+# Create injuries chart - Select top ten events
+injuriesChart <- ggplot(data=head(groupByInjuriesDesc,10), aes(x=reorder(EVTYPE, -groupByInjuries), y=groupByInjuries))
+
+# Define the type of the chart - Use stat = "identity" that leaves the data as is
+injuriesChart = injuriesChart + geom_bar(stat="identity", fill = "seagreen")
+
+# Set y-axis label
+injuriesChart = injuriesChart + ylab("Number of injuries")
+
+# Set x-axis label
+injuriesChart = injuriesChart + xlab("Event type")
+injuriesChart = injuriesChart + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Set chart title
+injuriesChart = injuriesChart + ggtitle("Number of injuries by event type") + theme(plot.title = element_text(hjust = 0.5))
+injuriesChart = injuriesChart + theme(legend.position="none")
+
+
+# Prepare for plotting charts
+grid.arrange(fatalitiesChart, injuriesChart, nrow = 1)
+```
+
+**Comments** 
+Tornadoes are clearly the most dangerous events for population health. Considering both fatalities and injuries, floods are the second dangerous events.
+
+### 3.2 Ten top events with the most dangerous effects on economy
+
+```{r economyChart}
+# Create properties chart - Select top ten events
+propertiesChart <- ggplot(data=head(groupByPropertiesDesc,10), aes(x=reorder(EVTYPE, -groupByProperties), y=groupByProperties))
+
+# Define the type of the chart - Use stat = "identity" that leaves the data as is
+propertiesChart = propertiesChart + geom_bar(stat="identity", fill = "red4")
+
+# Set y-axis label
+propertiesChart = propertiesChart + ylab("Property damage (dollars)")
+
+# Set x-axis label
+propertiesChart = propertiesChart + xlab("Event type")
+propertiesChart = propertiesChart + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Set chart title
+propertiesChart = propertiesChart + ggtitle("Property damage by event type") + theme(plot.title = element_text(hjust = 0.5))
+propertiesChart = propertiesChart + theme(legend.position="none")
+
+
+# Create crops chart - Select top ten events
+cropsChart <- ggplot(data=head(groupByCropsDesc,10), aes(x=reorder(EVTYPE, -groupByCrops), y=groupByCrops))
+
+# Define the type of the chart - Use stat = "identity" that leaves the data as is
+cropsChart = cropsChart + geom_bar(stat="identity", fill = "seagreen")
+
+# Set y-axis label
+cropsChart = cropsChart + ylab("Crop damage (dollars)")
+
+# Set x-axis label
+cropsChart = cropsChart + xlab("Event type")
+cropsChart = cropsChart + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Set chart title
+cropsChart = cropsChart + ggtitle("Crops damage by event type") + theme(plot.title = element_text(hjust = 0.5))
+cropsChart = cropsChart + theme(legend.position="none")
+
+
+# Prepare for plotting charts
+grid.arrange(propertiesChart, cropsChart, nrow = 1)
+```
+
+**Comments** 
+Overall, floods cause the most relevant economic consequences, even if drought is by far the most damaging event for crops.
+
+**Warning** 
+The EVTYPE variable has 898 unique values but lots of them are similar. In many cases, they differ each other because of:
+
+* a blank before the event type (ie "COASTAL FLOOD", " COASTAL FLOOD")
+* one or more character (ie "BEACH EROSIN", "BEACH EROSION")
+* different description for the same event (ie "FLASH FLOOD/FLOOD", "FLASH FLOOD/ FLOOD", "FLASH FLOODING/FLOOD")
+* etc ..
+
+In other situations, the EVTYPE is not clear (ie "EXCESSIVE") .. and so on. Surely a data cleansing step designed to correct these situations BEFORE to analyze the data is appropriated.
+
+
+
