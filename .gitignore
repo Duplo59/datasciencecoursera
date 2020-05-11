@@ -4,3 +4,4 @@
 # Ignora altri file di sistema di GIT
 .DS_Store
 .Rhistory
+.Rproj.user
