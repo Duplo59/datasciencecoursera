@@ -1,0 +1,76 @@
+---
+title: "Coursera <br> Developing Data Products <br> Week 4 Project"
+author: "Paolo Guderzo"
+date: "May 11th, 2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+
+This project corresponds to the final assignment of the **Developing Data Products** Coursera course by Johns Hopkins University.
+The main goal of this project is to create a shiny application to be deployed on a shiny server. The link for the application is https://duplo59.shinyapps.io/myApp/. 
+The code is available here: https://github.com/Duplo59/datasciencecoursera/tree/master/Course_09-Developing_Data_Products
+
+In order to do the project, I used the 'USArrests' dataset. The application performs a brief analysis on this dataset using some barplots and scatterplots. The user can choose the analysis he desires using four radio buttons.
+
+## Dataset overview
+
+The dataset contains violent crime data (assaults, rapes and murders - data per 100,000 residents) collected in USA in 1973 (50 observations on 4 variables). Besides, the dataset contains, for every observation, the percentage of urban population.
+
+```{r, datasetOverview}
+head(USArrests)
+```
+
+## UI Code
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+library(shiny)
+shinyUI(fluidPage(
+  titlePanel("A brief analysis about US Arrests in 1973"),
+  sidebarLayout(
+    sidebarPanel(
+        radioButtons("modelType",
+                     label = "Which kind of analysis do you want?",
+                     choices =  list("Correlation analysis" = 1,
+                                     "Analysis by US State" = 2,
+                                     "Murders vs Assaults" = 3,
+                                     "Rapes vs Assaults" = 4),
+                     selected = 1)
+    ),
+    mainPanel(
+      plotOutput("varPlot")
+    )
+  )
+))
+```
+
+## Some server code
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+# Based on the choice done by the user, a scatter plot 
+# with a regression line is displayed
+shinyServer(function(input, output) {
+    reactive({input$modelType
+    })
+    observe({
+        if (input$modelType == 1) {
+            output$varPlot <- renderPlot({ggpairs(df, 
+                    lower = list(continuous = "smooth"),
+                    title = "Some insights abouts correlations") +
+                    theme_bw() + 
+                    theme(plot.title = element_text(hjust = 0.5)) +
+                    theme(plot.title = element_text(color="black", 
+                    size=16, face="bold.italic"))
+                    })
+        } else if (input$modelType == 2) {
+            output$varPlot <- renderPlot({ggplot(df_State, 
+                aes(x = State, y = Number)) +
+                geom_bar(stat="identity", aes(fill = Crime), 
+
+```
+
+

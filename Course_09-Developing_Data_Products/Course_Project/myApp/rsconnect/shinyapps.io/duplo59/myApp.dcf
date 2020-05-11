@@ -5,9 +5,8 @@ account: duplo59
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2276209
-bundleId: 3131482
+bundleId: 3131681
 url: https://duplo59.shinyapps.io/myApp/
-when: 1589196789.80398
+when: 1589200950.75494
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: server - Copia.R

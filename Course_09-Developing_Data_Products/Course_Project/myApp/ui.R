@@ -21,10 +21,6 @@ shinyUI(fluidPage(
     ),
     mainPanel(
       plotOutput("varPlot")
-#    h3("Prova")
-#    textOutput("varTitle")
-#     h3("Predicted Horsepower from Model 2:")
-#      textOutput("pred2")
     )
   )
 ))
